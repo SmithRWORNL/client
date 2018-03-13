@@ -7,6 +7,8 @@ import gov.osti.doecode.servlet.Init;
 import gov.osti.doecode.utils.JsonObjectUtils;
 import gov.osti.doecode.utils.TemplateUtils;
 import java.io.IOException;
+import java.security.Principal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.servlet.ServletException;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 
 public class User extends HttpServlet {
 
@@ -45,6 +48,12 @@ public class User extends HttpServlet {
                          return_data = UserFunctions.updateUserCookie(request, request_data);
                          add_signin_html = true;
                          break;
+                         
+                    //Login-helper is a page which gets the current shiro username and server password
+                    case "login-helper":
+                        return_data.put("email", ((Principal) SecurityUtils.getSubject().getPrincipals().asList().get(0)).getName());
+                        return_data.put("password", "password1");
+                        break;  
                }
                response.addCookie(UserFunctions.makeUserCookie(return_data));
                if (add_signin_html) {
@@ -97,7 +106,9 @@ public class User extends HttpServlet {
                               output_data.put("is_redirected", true);
                               response.addCookie(new Cookie("user_data", null));
                          }
-                         break;
+                         output_data.put("email", ((Principal) SecurityUtils.getSubject().getPrincipals().asList().get(0)).getName());
+                         output_data.put("password", "password1");
+                         break; 	
                     case "register":
                          page_title = "DOE CODE: Register";
                          template = TemplateUtils.TEMPLATE_USER_REGISTRATION;

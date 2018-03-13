@@ -18,62 +18,73 @@ var login = function () {
     var error_messages = "";
 
     //Do some basic error checking
-    if (!post_data.email) {
-        $("#login-email-container").addClass('has-error');
-        error_messages += ("You need to enter an email<br/>");
-        try_login = false;
-    }
-    if (!post_data.password) {
-        $("#login-password-container").addClass('has-error');
-        error_messages += "You need to enter a password<br/>";
-        try_login = false;
-    }
+//    if (!post_data.email) {
+//        $("#login-email-container").addClass('has-error');
+//        error_messages += ("You need to enter an email<br/>");
+//        try_login = false;
+//    }
+//    if (!post_data.password) {
+//        $("#login-password-container").addClass('has-error');
+//        error_messages += "You need to enter a password<br/>";
+//        try_login = false;
+//    }
 
     if (try_login === true) {
-        $.ajax(API_BASE + "user/login", {
+
+        $.ajax("http://localhost:8080/doecode/login-helper", {
             cache: false,
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify(post_data),
-            success: function (data) {
-                //Now that we're logged in, let's set some local storage attributes
-                setLoggedInAttributes(data);
-                //Send up our login data for java to do content with
-                $.ajax('/' + APP_NAME + '/set-login-status-name', {
+            success: function (return_data) {
+            	$.ajax("http://localhost:8080/doecodeapi/services/user/login", {
                     cache: false,
                     contentType: "application/json",
                     method: "POST",
-                    data: JSON.stringify(data),
-                    success: function (return_data) {
-                        if (return_data.requested_url) {
-                            window.location.href = return_data.requested_url;
-                        } else if (window.sessionStorage.lastLocation && window.sessionStorage.lastLocation.length > 0) {
-                            window.location.href = window.sessionStorage.lastLocation;
+                    data: JSON.stringify(return_data),
+                    success: function (data) {
+                        //Now that we're logged in, let's set some local storage attributes
+                        setLoggedInAttributes(data);
+                        //Send up our login data for java to do content with
+                        $.ajax('/' + APP_NAME + '/set-login-status-name', {
+                            cache: false,
+                            contentType: "application/json",
+                            method: "POST",
+                            data: JSON.stringify(data),
+                            success: function (return_data) {
+                                if (return_data.requested_url) {
+                                    window.location.href = return_data.requested_url;
+                                } else if (window.sessionStorage.lastLocation && window.sessionStorage.lastLocation.length > 0) {
+                                    window.location.href = window.sessionStorage.lastLocation;
+                                } else {
+                                    window.location.href = '/' + APP_NAME + '/projects';
+                                }
+
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        $("#redirect-errors-container").hide();
+
+                        var error_msg = "";
+
+                        if (xhr.responseJSON) {
+                            var response = xhr.responseJSON;
+                            error_msg = (response.status === 401 && response.errors && response.errors.length > 0 && response.errors[0] == 'Password is expired.')
+                                    ? 'Your password has expired. Please go to the <a href="/' + APP_NAME + '/forgot-password">password reset page</a> to reset your password.'
+                                    : "Invalid Username/Password. If you believe this to be in error, please contact&nbsp;<a href='mailto:doecode@osti.gov'>doecode@osti.gov</a>&nbsp;for further information."
                         } else {
-                            window.location.href = '/' + APP_NAME + '/projects';
+                            error_msg = "An error has occurred, and the DOE CODE API couldn't be reached.";
                         }
 
+                        $("#login-errors").html(error_msg);
+                        $("#login-errors-container").show();
                     }
                 });
-            },
-            error: function (xhr) {
-                $("#redirect-errors-container").hide();
 
-                var error_msg = "";
-
-                if (xhr.responseJSON) {
-                    var response = xhr.responseJSON;
-                    error_msg = (response.status === 401 && response.errors && response.errors.length > 0 && response.errors[0] == 'Password is expired.')
-                            ? 'Your password has expired. Please go to the <a href="/' + APP_NAME + '/forgot-password">password reset page</a> to reset your password.'
-                            : "Invalid Username/Password. If you believe this to be in error, please contact&nbsp;<a href='mailto:doecode@osti.gov'>doecode@osti.gov</a>&nbsp;for further information."
-                } else {
-                    error_msg = "An error has occurred, and the DOE CODE API couldn't be reached.";
-                }
-
-                $("#login-errors").html(error_msg);
-                $("#login-errors-container").show();
-            }
+            }, 
         });
+ 
     } else {
         $("#login-errors").html(error_messages);
         $("#login-errors-container").show();

@@ -22,10 +22,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.security.Principal;
+
 
 /**
  *
@@ -57,6 +60,25 @@ public class UserFunctions {
                     }
                }
           }
+          
+          
+          else if (SecurityUtils.getSubject().getPrincipals() != null) {
+          return_data.put("first_name", Jsoup.clean(((Principal) SecurityUtils.getSubject().getPrincipals().asList().get(0)).getName(), Whitelist.basic()));
+          return_data.put("last_name", Jsoup.clean("", Whitelist.basic()));
+          return_data.put("email", Jsoup.clean("test@ornl.gov", Whitelist.basic()));
+          return_data.put("site", Jsoup.clean("", Whitelist.basic()));
+          return_data.put("roles", Jsoup.clean("", Whitelist.basic()));
+          return_data.put("pending_roles", Jsoup.clean("", Whitelist.basic()));
+          return_data.put("has_osti_role", Jsoup.clean("", Whitelist.basic()));
+//          return_data.put("site", Jsoup.clean(JsonObjectUtils.getString(user_data, "site", ""), Whitelist.basic()));
+//          ArrayNode roles = JsonObjectUtils.parseArrayNode(JsonObjectUtils.getString(user_data, "roles", "[]"));
+//          ArrayNode pending_roles = JsonObjectUtils.parseArrayNode(JsonObjectUtils.getString(user_data, "pending_roles", "[]"));
+//          return_data.put("roles", roles);
+//          return_data.put("pending_roles", pending_roles);
+//          return_data.put("has_osti_role", hasRole(roles, "OSTI"));
+          return_data.put("is_logged_in", true);
+          return_data.put("session_timeout", LocalDateTime.now().plus(Init.SESSION_TIMEOUT_MINUTES, ChronoUnit.MINUTES).format(SESSION_TIMEOUT_FORMAT));
+          }
           return return_data;
      }
 
@@ -82,7 +104,19 @@ public class UserFunctions {
 
      public static ObjectNode setUserDataForCookie(ObjectNode user_data) {
           ObjectNode return_data = new ObjectNode(JsonObjectUtils.FACTORY_INSTANCE);
-          return_data.put("first_name", Jsoup.clean(JsonObjectUtils.getString(user_data, "first_name", ""), Whitelist.basic()));
+
+          return_data.put("is_logged_in", true);
+          return_data.put("session_timeout", LocalDateTime.now().plus(Init.SESSION_TIMEOUT_MINUTES, ChronoUnit.MINUTES).format(SESSION_TIMEOUT_FORMAT));
+
+          	if(!Jsoup.clean(JsonObjectUtils.getString(user_data, "first_name", ""), Whitelist.basic()).isEmpty()) {
+
+//              return_data.put("site", Jsoup.clean(JsonObjectUtils.getString(user_data, "site", ""), Whitelist.basic()));
+//              ArrayNode roles = JsonObjectUtils.parseArrayNode(JsonObjectUtils.getString(user_data, "roles", "[]"));
+//              ArrayNode pending_roles = JsonObjectUtils.parseArrayNode(JsonObjectUtils.getString(user_data, "pending_roles", "[]"));
+//              return_data.put("roles", roles);
+//              return_data.put("pending_roles", pending_roles);
+//              return_data.put("has_osti_role", hasRole(roles, "OSTI"));
+          		return_data.put("first_name", Jsoup.clean(JsonObjectUtils.getString(user_data, "first_name", ""), Whitelist.basic()));
           return_data.put("last_name", Jsoup.clean(JsonObjectUtils.getString(user_data, "last_name", ""), Whitelist.basic()));
           return_data.put("email", Jsoup.clean(JsonObjectUtils.getString(user_data, "email", ""), Whitelist.basic()));
           return_data.put("site", Jsoup.clean(JsonObjectUtils.getString(user_data, "site", ""), Whitelist.basic()));
@@ -93,6 +127,15 @@ public class UserFunctions {
           return_data.put("has_osti_role", hasRole(roles, "OSTI"));
           return_data.put("is_logged_in", true);
           return_data.put("session_timeout", LocalDateTime.now().plus(Init.SESSION_TIMEOUT_MINUTES, ChronoUnit.MINUTES).format(SESSION_TIMEOUT_FORMAT));
+          	} else {
+                    return_data.put("first_name", Jsoup.clean(((Principal) SecurityUtils.getSubject().getPrincipals().asList().get(0)).getName(), Whitelist.basic()));
+                    return_data.put("last_name", Jsoup.clean("", Whitelist.basic()));
+                    return_data.put("email", Jsoup.clean("test@ornl.gov", Whitelist.basic()));
+                    return_data.put("site", Jsoup.clean("", Whitelist.basic()));
+                    return_data.put("roles", Jsoup.clean("", Whitelist.basic()));
+                    return_data.put("pending_roles", Jsoup.clean("", Whitelist.basic()));
+                    return_data.put("has_osti_role", Jsoup.clean("", Whitelist.basic()));
+          	}
           return return_data;
      }
 
@@ -100,7 +143,21 @@ public class UserFunctions {
           ObjectNode user_data = getUserDataFromCookie(request);
           String session_timeout = JsonObjectUtils.getString(user_data, "session_timeout", "");
           if (DOECODEUtils.isValidDateOfPattern(SESSION_TIMEOUT_FORMAT, session_timeout)) {
-               user_data.put("session_timeout", LocalDateTime.now().plus(Init.SESSION_TIMEOUT_MINUTES, ChronoUnit.MINUTES).format(SESSION_TIMEOUT_FORMAT));
+               //          if (request.getCookies() != null) {
+//             for (Cookie c : request.getCookies()) {
+//             if (StringUtils.equals(c.getName(), "user_data")) {
+//                  try {
+//                       byte[] decoded = Base64.decodeBase64(c.getValue());
+//                       if (StringUtils.isNotBlank(new String(decoded)) && JsonObjectUtils.isValidObjectNode(new String(decoded))) {
+//                            return_data = JsonObjectUtils.parseObjectNode(new String(decoded));
+//                            break;
+//                       }
+//                  } catch (Exception ex) {
+//                       log.error("Couldn't decode: " + ex.getMessage());
+//                  }
+//             }
+//        }
+//   }a.put("session_timeout", LocalDateTime.now().plus(Init.SESSION_TIMEOUT_MINUTES, ChronoUnit.MINUTES).format(SESSION_TIMEOUT_FORMAT));
           }
           return makeUserCookie(user_data);
      }

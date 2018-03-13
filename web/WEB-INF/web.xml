@@ -93,6 +93,7 @@
         <url-pattern>/account</url-pattern>
         <url-pattern>/user-admin</url-pattern>
         <url-pattern>/login</url-pattern>
+        <url-pattern>/login-helper</url-pattern>
         <url-pattern>/set-login-status-name</url-pattern>
         <url-pattern>/update-login-status-name</url-pattern>
         <url-pattern>/logout</url-pattern>
@@ -136,4 +137,47 @@
         <servlet-class>gov.osti.doecode.servlet.Init</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    
+  
+    <!-- listener>
+        <description>ServletContextListener</description>
+        <listener-class>gov.osti.listeners.DoeServletContextListener</listener-class>
+    </listener> -->
+    <servlet>
+        <servlet-name>DOECode</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.secnod.shiro.jersey.AuthorizationFilterFeature, org.secnod.shiro.jersey.SubjectFactory, org.secnod.shiro.jersey.AuthInjectionBinder,
+            org.secnod.shiro.jaxrs.ShiroExceptionMapper,
+            org.glassfish.jersey.server.mvc.jsp.JspMvcFeature</param-value>
+        </init-param>
+        <!-- <init-param>
+            <param-name>jersey.config.server.mvc.templateBasePath.jsp</param-name>
+            <param-value>/WEB-INF/jsp</param-value>
+        </init-param> -->      
+    </servlet>
+    <!-- <servlet-mapping>
+        <servlet-name>DOECode</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+    </servlet-mapping> -->
+
+	<listener>
+		<listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>ShiroFilter</filter-name>
+		<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>ShiroFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
 </web-app>

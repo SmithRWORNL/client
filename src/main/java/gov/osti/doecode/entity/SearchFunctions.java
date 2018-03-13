@@ -81,36 +81,36 @@ public class SearchFunctions {
           post_data.put("software_type", handleRequestArray(request.getParameter("software_type")));
 
           ObjectNode search_result_data = new ObjectNode(JsonObjectUtils.FACTORY_INSTANCE);
-          try {
-               URL url = new URL(api_url + "search");
-               HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-               conn.setConnectTimeout(5000);
-               conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-               conn.setDoOutput(true);
-               conn.setDoInput(true);
-               conn.setRequestMethod("POST");
-
-               OutputStream os = conn.getOutputStream();
-               os.write(post_data.toString().getBytes());
-               os.close();
-
-               InputStream in = new BufferedInputStream(conn.getInputStream());
-               String result = IOUtils.toString(in, "UTF-8");
-
-               in.close();
-               conn.disconnect();
-
-               if (JsonObjectUtils.isValidObjectNode(result)) {
-                    search_result_data = JsonObjectUtils.parseObjectNode(result);
-               } else {
-                    invalid_search_data = true;
-               }
-          } catch (Exception ex) {
-               log.error("Exception in search: " + ex.getMessage());
-               had_error = true;
-               invalid_search_data = true;
-               error_message = "An error has occurred that is preventing your search from working.";
-          }
+//          try {
+//               URL url = new URL(api_url + "search");
+//               HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//               conn.setConnectTimeout(5000);
+//               conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+//               conn.setDoOutput(true);
+//               conn.setDoInput(true);
+//               conn.setRequestMethod("POST");
+//
+//               OutputStream os = conn.getOutputStream();
+//               os.write(post_data.toString().getBytes());
+//               os.close();
+//
+//               InputStream in = new BufferedInputStream(conn.getInputStream());
+//               String result = IOUtils.toString(in, "UTF-8");
+//
+//               in.close();
+//               conn.disconnect();
+//
+//               if (JsonObjectUtils.isValidObjectNode(result)) {
+//                    search_result_data = JsonObjectUtils.parseObjectNode(result);
+//               } else {
+//                    invalid_search_data = true;
+//               }
+//          } catch (Exception ex) {
+//               log.error("Exception in search: " + ex.getMessage());
+//               had_error = true;
+//               invalid_search_data = true;
+//               error_message = "An error has occurred that is preventing your search from working.";
+//          }
 
           //Get the num found
           long num_found = JsonObjectUtils.getLong(search_result_data, "num_found", 0);
@@ -131,23 +131,26 @@ public class SearchFunctions {
           }
 
           //Give everything back
-          return_data.put("search_result_count", num_found);
-          return_data.put("had_error", had_error);
-          return_data.put("error_message", error_message);
-          return_data.put("search_form_data", search_form_data);
-          return_data.put("search_results_list", search_results_list);
-          return_data.put("pagination_btn", getPaginationData(search_form_data, num_found));
-          return_data.put("breadcrumbTrailItem", getSearchBreadcrumbTrailList(post_data, num_found));
-          return_data.put("search_sort_dropdown", sort_dropdownOptions(JsonObjectUtils.getString(post_data, "sort", "")));
-          return_data.put("availabilities_list", getSearchDropdownList(Init.availabilities_list, handleRequestArray(request.getParameter("accessibility"))));
-          return_data.put("license_options_list", getSearchDropdownList(Init.licenses_list, handleRequestArray(request.getParameter("licenses"))));
-          return_data.put("software_type_options_list", getSearchDropdownList(Init.software_type, handleRequestArray(request.getParameter("software_type"))));
-          return_data.put("search_description", getSearchResultsDescription(post_data, context));
-          if (!invalid_search_data) {
-               return_data.put("search_facets_data", search_result_data.get("facets"));
-               return_data.put("year_facets_data", getYearFacetsData((ObjectNode) search_result_data.get("facets")));
-          }
+//          return_data.put("search_result_count", num_found);
+//          return_data.put("had_error", had_error);
+//          return_data.put("error_message", error_message);
+//          return_data.put("search_form_data", search_form_data);
+//          return_data.put("search_results_list", search_results_list);
+//          return_data.put("pagination_btn", getPaginationData(search_form_data, num_found));
+//          return_data.put("breadcrumbTrailItem", getSearchBreadcrumbTrailList(post_data, num_found));
+//          return_data.put("search_sort_dropdown", sort_dropdownOptions(JsonObjectUtils.getString(post_data, "sort", "")));
+//          return_data.put("availabilities_list", getSearchDropdownList(Init.availabilities_list, handleRequestArray(request.getParameter("accessibility"))));
+//          return_data.put("license_options_list", getSearchDropdownList(Init.licenses_list, handleRequestArray(request.getParameter("licenses"))));
+//          return_data.put("software_type_options_list", getSearchDropdownList(Init.software_type, handleRequestArray(request.getParameter("software_type"))));
+//          return_data.put("search_description", getSearchResultsDescription(post_data, context));
+//          if (!invalid_search_data) {
+//               return_data.put("search_facets_data", search_result_data.get("facets"));
+//               return_data.put("year_facets_data", getYearFacetsData((ObjectNode) search_result_data.get("facets")));
+//          }
 
+          
+          return_data.put("had_error", true);
+          return_data.put("error_message", "HERE");
           return return_data;
      }
 

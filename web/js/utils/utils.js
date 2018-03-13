@@ -142,7 +142,7 @@ function handleAuthenticatedSuccess(data, callback) {
 }
 
 function handleAuthenticatedError(jqXhr, exception, callback) {
-    if (jqXhr.status == 401) {
+	if (jqXhr.status == 401) {
         window.sessionStorage.lastLocation = window.location.href;
         clearLoginLocalstorage();
         window.location.href = '/' + APP_NAME + '/login?redirect=true';

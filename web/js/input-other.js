@@ -270,7 +270,7 @@ if (document.getElementById('confirmation-page-identifier')) {
     setCommonModalMessage(LOADING_PROJECTS_OPTS);
     showCommonModalMessage();
     $.ajax({
-        url: API_BASE + 'metadata/projects',
+        url: 'http://localhost:8080/doecodeapi/services/metadata/projects',
         cache: false,
         contentType: "application/json; charset=UTF-8",
         method: "GET",
@@ -291,7 +291,9 @@ if (document.getElementById('confirmation-page-identifier')) {
             projects_table.rows.add(new_data).draw();
             hideCommonModalMessage();
         },
-        error: function () {
+        error: function (xhr, status, error) {
+            console.log(API_BASE + 'metadata/projects')
+        	console.log(JSON.parse(xhr.responseText));
             setCommonModalMessage(LOADER_PROJECTS_ERROR_OPTS);
         }
     });
