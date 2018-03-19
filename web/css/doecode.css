@@ -526,7 +526,7 @@ html h3 {
 }
 
 .homepage-outtermost-style {
-    background-image: linear-gradient(rgb(30, 111, 146), rgb(1, 53, 88) 100%);
+		background: radial-gradient(ellipse at bottom, #37AE62, #0C7F43);
 }
 
 .homepage-searchbar {
@@ -691,6 +691,7 @@ html, body {
 
 .footer-homepage {
     height: 183px;
+    background-color: white;
 }
 
 .footer-bottom {
@@ -947,6 +948,7 @@ html, body {
 
 .header-subtext {
     color: white;
+    font-size: 20px;
 }
 
 .icon-row {
