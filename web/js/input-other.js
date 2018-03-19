@@ -270,7 +270,7 @@ if (document.getElementById('confirmation-page-identifier')) {
     setCommonModalMessage(LOADING_PROJECTS_OPTS);
     showCommonModalMessage();
     $.ajax({
-        url: 'http://localhost:8080/doecodeapi/services/metadata/projects',
+        url: API_BASE + 'metadata/projects',
         cache: false,
         contentType: "application/json; charset=UTF-8",
         method: "GET",

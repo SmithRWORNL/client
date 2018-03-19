@@ -6,8 +6,17 @@ import gov.osti.doecode.entity.UserFunctions;
 import gov.osti.doecode.servlet.Init;
 import gov.osti.doecode.utils.JsonObjectUtils;
 import gov.osti.doecode.utils.TemplateUtils;
+
+import java.util.HashMap;
+import org.pac4j.saml.profile.SAML2Profile;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +60,7 @@ public class User extends HttpServlet {
                          
                     //Login-helper is a page which gets the current shiro username and server password
                     case "login-helper":
-                        return_data.put("email", ((Principal) SecurityUtils.getSubject().getPrincipals().asList().get(0)).getName());
+                        return_data.put("email", (String) ((ArrayList<String>) ((SAML2Profile) ((HashMap) SecurityUtils.getSubject().getSession().getAttribute("pac4jUserProfiles")).get("SAML2Client")).getAttributes().get("mail")).get(0));
                         return_data.put("password", "password1");
                         break;  
                }
@@ -136,6 +145,10 @@ public class User extends HttpServlet {
                          page_title = "DOE CODE: Help";
                          template = TemplateUtils.TEMPLATE_HELP;
                          break;
+                    case "server-login":
+                    	//Redirect to server handshake page with the redirect pointing to the client address
+                    	response.sendRedirect(getServletConfig().getServletContext().getInitParameter("api_url") + "user/handshake?source=" + getServletConfig().getServletContext().getInitParameter("api_url").replace("/doecodeapi/services/", "/doecode/"));
+                    	return;
                     default:
                          break;
                }

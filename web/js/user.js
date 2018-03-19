@@ -31,13 +31,13 @@ var login = function () {
 
     if (try_login === true) {
 
-        $.ajax("http://localhost:8080/doecode/login-helper", {
+        $.ajax('/' + APP_NAME + '/login-helper', {
             cache: false,
             contentType: "application/json",
             method: "POST",
             data: JSON.stringify(post_data),
             success: function (return_data) {
-            	$.ajax("http://localhost:8080/doecodeapi/services/user/login", {
+            	$.ajax(API_BASE + "user/login", {
                     cache: false,
                     contentType: "application/json",
                     method: "POST",
@@ -746,6 +746,7 @@ var setUpUserAccountPage = function () {
 
 if (document.getElementById('login-page-identifier')) {
     //Log In
+	login();
     $("#signin-btn").on('click', login);
 
     //Make enter work on email and password
